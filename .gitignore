@@ -1,0 +1,6 @@
+*.db
+*.ipch
+*.filters
+ConsoleApplication1/ConsoleApplication1/Debug/vc141.idb
+ConsoleApplication1/ConsoleApplication1/Debug/
+ConsoleApplication1/ConsoleApplication1/x64/Debug/
