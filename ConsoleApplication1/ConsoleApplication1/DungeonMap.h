@@ -5,4 +5,4 @@ const int startLocationX = 4;
 const int startLocationY = 45;
 
 
-void getMapLayout(int curX, int curY);
+void getMapLayout(int curX, int curY, int displayedSection[15][15]);
