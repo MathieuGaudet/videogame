@@ -1,5 +1,7 @@
 // ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
+
+
 #include "pch.h"
 #include <stdlib.h>
 #include <iostream>
@@ -8,10 +10,9 @@
 #include "DungeonMap.h"
 
 // Game specifications
-constexpr int dungeonDisplayWidth = 15;
-constexpr int dungeonDisplayHeight = 15;
+constexpr int dungeonDisplay = 15;
 constexpr int spriteSize = 32;
-
+constexpr int displayCenter = dungeonDisplay / 2;
 struct location
 {
 	int x;
@@ -19,7 +20,7 @@ struct location
 };
 
 enum characterDirection {
-	LEFT = 0, 
+	LEFT = 0,
 	RIGHT,
 	UP,
 	DOWN
@@ -28,13 +29,13 @@ enum characterDirection {
 int main()
 {
 	struct location playerLocation;
-	int displayedSection[dungeonDisplayHeight][dungeonDisplayWidth];
+	int displayedSection[dungeonDisplay][dungeonDisplay];
 
 	playerLocation.x = startLocationX;
 	playerLocation.y = startLocationY;
-	
-	
-	sf::RenderWindow window(sf::VideoMode(spriteSize * dungeonDisplayHeight, spriteSize * dungeonDisplayWidth), "Mathieu's Game");
+
+
+	sf::RenderWindow window(sf::VideoMode(spriteSize * dungeonDisplay, spriteSize * dungeonDisplay), "Mathieu's Game");
 
 
 	//0 = Left, 1 = Right, 2 = Up, 3 = down
@@ -44,7 +45,7 @@ int main()
 	{
 		std::cout << "error: Image not found";
 	}
-	
+
 	if (!playerTextures[0][1].loadFromFile("sprites/KnightLeft2v2.png"))
 	{
 		std::cout << "error: Image not found";
@@ -90,7 +91,7 @@ int main()
 	{
 		std::cout << "error: Image not found";
 	}
-	
+
 	// terrain textures
 	sf::Texture wallTexture;
 	if (!wallTexture.loadFromFile("sprites/Wall.png"))
@@ -116,15 +117,15 @@ int main()
 		std::cout << "error: Image not found";
 	}
 
-	sf::Sprite dungeonMapLayout[dungeonDisplayHeight][dungeonDisplayWidth];
+	sf::Sprite dungeonMapLayout[dungeonDisplay][dungeonDisplay];
 
-	for (int y = 0; y < dungeonDisplayHeight; y++)
+	for (int y = 0; y < dungeonDisplay; y++)
 	{
-		for (int x = 0; x < dungeonDisplayWidth; x++) {
+		for (int x = 0; x < dungeonDisplay; x++) {
 			dungeonMapLayout[y][x].setPosition(sf::Vector2f((float)(x * spriteSize), (float)(y * spriteSize)));
 		}
 	}
-	
+
 	enum characterDirection lastDirection = DOWN;
 	int spriteCycle = 0;
 	int idle = 0;
@@ -141,7 +142,7 @@ int main()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
 			lastDirection = LEFT;
-			if (displayedSection[7][6] == 0xe0)
+			if (displayedSection[displayCenter][displayCenter - 1] == 0xe0)
 			{
 				playerLocation.x--;
 			}
@@ -150,7 +151,7 @@ int main()
 		{
 			lastDirection = RIGHT;
 
-			if (displayedSection[7][8] == 0xe0)
+			if (displayedSection[displayCenter][displayCenter + 1] == 0xe0)
 			{
 				playerLocation.x++;
 			}
@@ -159,7 +160,7 @@ int main()
 		{
 			lastDirection = UP;
 
-			if (displayedSection[6][7] == 0xe0)
+			if (displayedSection[displayCenter - 1][displayCenter] == 0xe0)
 			{
 				playerLocation.y--;
 			}
@@ -168,26 +169,26 @@ int main()
 		{
 			lastDirection = DOWN;
 
-			if (displayedSection[8][7] == 0xe0)
+			if (displayedSection[displayCenter + 1][displayCenter] == 0xe0)
 			{
 				playerLocation.y++;
 			}
-		} 
-		else 
+		}
+		else
 		{
 			spriteCycle = 0;
 		}
-		if (++spriteCycle >= 3) 
+		if (++spriteCycle >= 3)
 		{
 			spriteCycle = 0;
 		}
-		
+
 
 		window.clear();
 		//std::cout << "\n";
-		for (int y = 0; y < dungeonDisplayHeight; y++)
+		for (int y = 0; y < dungeonDisplay; y++)
 		{
-			for (int x = 0; x < dungeonDisplayWidth; x++) {
+			for (int x = 0; x < dungeonDisplay; x++) {
 				// Set texture and location on the screen
 				switch (displayedSection[y][x])
 				{
@@ -220,24 +221,24 @@ int main()
 			//std::cout << "\n";
 		}
 		if (lastDirection == DOWN) {
-		dungeonMapLayout[7][7].setTexture(playerTextures[3][spriteCycle]);
-	}
-		else if(lastDirection == RIGHT)
+			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[3][spriteCycle]);
+		}
+		else if (lastDirection == RIGHT)
 		{
-			dungeonMapLayout[7][7].setTexture(playerTextures[1][spriteCycle]);
+			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[1][spriteCycle]);
 		}
 		else if (lastDirection == LEFT)
 		{
-			dungeonMapLayout[7][7].setTexture(playerTextures[0][spriteCycle]);
+			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[0][spriteCycle]);
 		}
 		else if (lastDirection == UP)
 		{
-			dungeonMapLayout[7][7].setTexture(playerTextures[2][spriteCycle]);
+			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[2][spriteCycle]);
 		}
-		window.draw(dungeonMapLayout[7][7]);
+		window.draw(dungeonMapLayout[displayCenter][displayCenter]);
 		window.display();
 		Sleep(100);
-//		std::cout << "\n";
+		//		std::cout << "\n";
 	}
 
 	return 0;
@@ -248,136 +249,136 @@ int main()
 
 
 #if 0
-	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
 
-	sf::Sprite knightSprite;
-	knightSprite.setPosition(sf::Vector2f(10.f, 50.f)); // absolute position
+sf::Sprite knightSprite;
+knightSprite.setPosition(sf::Vector2f(10.f, 50.f)); // absolute position
 
 
-	sf::Texture textureLeft1;
-	if (!textureLeft1.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightLeft1.png"))
+sf::Texture textureLeft1;
+if (!textureLeft1.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightLeft1.png"))
+{
+	std::cout << "error: Image not found";
+}
+
+sf::Texture textureLeft2;
+if (!textureLeft2.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightLeft2.png"))
+{
+	std::cout << "error: Image not found";
+}
+
+sf::Texture textureLeft3;
+if (!textureLeft3.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightLeft3.png"))
+{
+	std::cout << "error: Image not found";
+}
+
+
+sf::Texture textureRight1;
+if (!textureRight1.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightRight1.png"))
+{
+	std::cout << "error: Image not found";
+}
+
+sf::Texture textureRight2;
+if (!textureRight2.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightRight2.png"))
+{
+	std::cout << "error: Image not found";
+}
+
+sf::Texture textureRight3;
+if (!textureRight3.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightRight3.png"))
+{
+	std::cout << "error: Image not found";
+}
+
+
+while (window.isOpen())
+{
+	sf::Event event;
+	while (window.pollEvent(event))
 	{
-		std::cout << "error: Image not found";
+		if (event.type == sf::Event::Closed)
+			window.close();
 	}
 
-	sf::Texture textureLeft2;
-	if (!textureLeft2.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightLeft2.png"))
+	window.clear();
+
+	while (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		std::cout << "error: Image not found";
-	}
-
-	sf::Texture textureLeft3;
-	if (!textureLeft3.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightLeft3.png"))
-	{
-		std::cout << "error: Image not found";
-	}
 
 
-	sf::Texture textureRight1;
-	if (!textureRight1.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightRight1.png"))
-	{
-		std::cout << "error: Image not found";
-	}
-
-	sf::Texture textureRight2;
-	if (!textureRight2.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightRight2.png"))
-	{
-		std::cout << "error: Image not found";
-	}
-
-	sf::Texture textureRight3;
-	if (!textureRight3.loadFromFile("C:\\Users\\Gaudets\\Documents\\repos\\videogame\\sprites\\knightRight3.png"))
-	{
-		std::cout << "error: Image not found";
-	}
-
-
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
-
+		knightSprite.setTexture(textureLeft1);
+		knightSprite.move(-1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(250);
 		window.clear();
 
-		while (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
+		knightSprite.setTexture(textureLeft2);
+		knightSprite.move(-1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(250);
+		window.clear();
 
+		knightSprite.setTexture(textureLeft3);
+		knightSprite.move(-1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(250);
+		window.clear();
 
-			knightSprite.setTexture(textureLeft1);
-			knightSprite.move(-1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(250);
-			window.clear();
-
-			knightSprite.setTexture(textureLeft2);
-			knightSprite.move(-1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(250);
-			window.clear();
-
-			knightSprite.setTexture(textureLeft3);
-			knightSprite.move(-1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(250);
-			window.clear();
-
-			knightSprite.setTexture(textureLeft2);
-			knightSprite.move(-1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(250);
-			window.clear();
-		}
-
-
-		while (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-
-			knightSprite.setTexture(textureRight1);
-			knightSprite.move(1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(175);
-			knightSprite.move(1.f, 0.f);
-			Sleep(175);
-			window.clear();
-
-			knightSprite.setTexture(textureRight2);
-			knightSprite.move(1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(175);
-			knightSprite.move(1.f, 0.f);
-			Sleep(175);
-			window.clear();
-
-			knightSprite.setTexture(textureRight3);
-			knightSprite.move(1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(175);
-			knightSprite.move(1.f, 0.f);
-			Sleep(175);
-			window.clear();
-
-			knightSprite.setTexture(textureRight2);
-			knightSprite.move(1.f, 0.f);
-			window.draw(knightSprite);
-			window.display();
-			Sleep(175);
-			knightSprite.move(1.f, 0.f);
-			Sleep(175);
-			window.clear();
-		}
-
-		//window.draw(shape);
-
+		knightSprite.setTexture(textureLeft2);
+		knightSprite.move(-1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(250);
+		window.clear();
 	}
+
+
+	while (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+
+		knightSprite.setTexture(textureRight1);
+		knightSprite.move(1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(175);
+		knightSprite.move(1.f, 0.f);
+		Sleep(175);
+		window.clear();
+
+		knightSprite.setTexture(textureRight2);
+		knightSprite.move(1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(175);
+		knightSprite.move(1.f, 0.f);
+		Sleep(175);
+		window.clear();
+
+		knightSprite.setTexture(textureRight3);
+		knightSprite.move(1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(175);
+		knightSprite.move(1.f, 0.f);
+		Sleep(175);
+		window.clear();
+
+		knightSprite.setTexture(textureRight2);
+		knightSprite.move(1.f, 0.f);
+		window.draw(knightSprite);
+		window.display();
+		Sleep(175);
+		knightSprite.move(1.f, 0.f);
+		Sleep(175);
+		window.clear();
+	}
+
+	//window.draw(shape);
+
+}
 #endif
