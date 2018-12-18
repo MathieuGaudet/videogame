@@ -62,17 +62,17 @@ const int dungeonMap[dungeonHeight][dungeonWidth] = {
 };
 
 // Gets a small chunk (15x15) of the map depending on where player is.
-void getMapLayout(int centerX, int centerY, int displayedSection[15][15]) {
-	int curX = centerX - 7;
-	int curY = centerY - 7;
+void getMapLayout(int centerX, int centerY, int displayedSection[dungeonDisplay][dungeonDisplay]) {
+	int curX = centerX - displayCenter;
+	int curY = centerY - displayCenter;
 	
-	for (int indexY = 0; indexY < 15; indexY++, curY++)
+	for (int indexY = 0; indexY < dungeonDisplay; indexY++, curY++)
 	{
 		
-		for (int indexX = 0; indexX < 15; indexX++, curX++) {
-			if (curX < 0 || curX >= 50 || curY < 0 || curY >= 50)
+		for (int indexX = 0; indexX < dungeonDisplay; indexX++, curX++) {
+			if (curX < 0 || curX >= dungeonWidth || curY < 0 || curY >= dungeonHeight)
 			{
-				displayedSection[indexY][indexX] = 0xff;
+				displayedSection[indexY][indexX] = tileBlank;
 			}
 			else
 			{
@@ -80,7 +80,7 @@ void getMapLayout(int centerX, int centerY, int displayedSection[15][15]) {
 			}
 
 		}
-		curX -= 15;
+		curX -= dungeonDisplay;
 	}
 	return;
 
