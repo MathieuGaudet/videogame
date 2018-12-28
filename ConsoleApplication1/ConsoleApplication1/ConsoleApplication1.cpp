@@ -8,9 +8,11 @@
 #include <SFML/Graphics.hpp>
 #include <windows.h>
 #include "DungeonMap.h"
+#include "Combat.h"
 
 // Game specifications
 constexpr int spriteSize = 32;
+
 
 struct location
 {
@@ -27,6 +29,34 @@ enum characterDirection {
 
 int main()
 {
+	/*sf::Font font;
+	if (!font.loadFromFile("arial.ttf"))
+	{
+		// error...
+	}
+
+	initiateCombat();
+	sf::Text text;
+
+	// select the font
+	text.setFont(); // font is a sf::Font
+
+	// set the string to display
+	text.setString("Hello world");
+
+	// set the character size
+	text.setCharacterSize(24); // in pixels, not points!
+
+	// set the color
+	text.setFillColor(sf::Color::Red);
+
+	// set the text style
+	text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+
+	return 0;
+	*/
+
+
 	struct location playerLocation;
 	int displayedSection[dungeonDisplay][dungeonDisplay];
 
@@ -185,33 +215,35 @@ int main()
 
 		window.clear();
 		//std::cout << "\n";
+	
 		for (int y = 0; y < dungeonDisplay; y++)
 		{
 			for (int x = 0; x < dungeonDisplay; x++) {
 				// Set texture and location on the screen
-				switch (displayedSection[y][x])
-				{
-					/*case tileBlank:
-						dungeonMapLayout[y][x].setTexture(blankTexture);
-						break;*/
-				case tileWall:
-					dungeonMapLayout[y][x].setTexture(wallTexture);
-					//std::cout << "[]";
-					break;
-				case tileWallShadow:
-					dungeonMapLayout[y][x].setTexture(wallShadowTexture);
-					//std::cout << "()";
-					break;
-				case tileFloor:
-					dungeonMapLayout[y][x].setTexture(floorTexture);
-					//std::cout << "00";
-					break;
+					switch (displayedSection[y][x])
+					{
+						/*case tileBlank:
+							dungeonMapLayout[y][x].setTexture(blankTexture);
+							break;*/
+					case tileWall:
+						dungeonMapLayout[y][x].setTexture(wallTexture);
+						//std::cout << "[]";
+						break;
+					case tileWallShadow:
+						dungeonMapLayout[y][x].setTexture(wallShadowTexture);
+						//std::cout << "()";
+						break;
+					case tileFloor:
+						dungeonMapLayout[y][x].setTexture(floorTexture);
+						//std::cout << "00";
+						break;
 
-				default:
-					dungeonMapLayout[y][x].setTexture(blankTexture);
-					//std::cout << "@@";
-					break;
-				}
+					default:
+						dungeonMapLayout[y][x].setTexture(blankTexture);
+						//std::cout << "@@";
+						break;
+					}
+				
 
 				window.draw(dungeonMapLayout[y][x]);
 
@@ -219,22 +251,23 @@ int main()
 
 			//std::cout << "\n";
 		}
-		if (lastDirection == DOWN) {
-			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[3][spriteCycle]);
-		}
-		else if (lastDirection == RIGHT)
-		{
-			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[1][spriteCycle]);
-		}
-		else if (lastDirection == LEFT)
-		{
-			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[0][spriteCycle]);
-		}
-		else if (lastDirection == UP)
-		{
-			dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[2][spriteCycle]);
-		}
-		window.draw(dungeonMapLayout[displayCenter][displayCenter]);
+			if (lastDirection == DOWN) {
+				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[3][spriteCycle]);
+			}
+			else if (lastDirection == RIGHT)
+			{
+				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[1][spriteCycle]);
+			}
+			else if (lastDirection == LEFT)
+			{
+				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[0][spriteCycle]);
+			}
+			else if (lastDirection == UP)
+			{
+				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[2][spriteCycle]);
+			}
+			window.draw(dungeonMapLayout[displayCenter][displayCenter]);
+		
 		window.display();
 		Sleep(100);
 		//		std::cout << "\n";
