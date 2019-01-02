@@ -6,6 +6,8 @@
 #include <ctime>
 #include <cstdlib>
 
+int addRandomness(int rawNumber);
+
 int main()
 {
 	struct statBlock
@@ -47,7 +49,7 @@ int main()
 	int characterHPLeft = characterStats.hitpoints;
 
 	// monster's stats
-	struct statBlock monsterStats = {2, 3, 90};
+	struct statBlock monsterStats = {2, 3, 45};
 	int monsterHPLeft = monsterStats.hitpoints;
 
 	// random number generating stuff
@@ -72,25 +74,24 @@ int main()
 		{
 		case 'a':
 			
-			randomNumberValue = (rand() % range) + lowestNumber;
-			std::cout << "\n" << randomNumberValue << "\n\n";
-			damage = (characterStats.attack* (characterStats.attack+randomNumberValue)*10) / (characterStats.attack + monsterStats.defense);
+			damage = (characterStats.attack * (characterStats.attack) * 10) / (characterStats.attack + monsterStats.defense);
+			damage = addRandomness(damage);
 			std::cout << "\nYou deal " << damage << " damage to the monster\n";
 			monsterHPLeft -= damage;
 			if (monsterHPLeft <= 0) {
 				std::cout << "You have slain the fiend!\n";
 			}
 			else {
-				randomNumberValue = (rand() % range) + lowestNumber;
-				damage = (monsterStats.attack* (monsterStats.attack + randomNumberValue) * 10) / (monsterStats.attack + characterStats.defense);
+				
+				damage = (monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense);
+				damage = addRandomness(damage);
 				characterHPLeft -= damage;
 				std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
 			}
 			break;
 		case 'b':
-			randomNumberValue = (rand() % range) + lowestNumber;
-			damage = ((monsterStats.attack* (monsterStats.attack + randomNumberValue) * 10) / (monsterStats.attack + characterStats.defense))/2;
-			characterHPLeft -= damage;
+			damage = (monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense);
+			damage = addRandomness(damage);			characterHPLeft -= damage;
 			std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
 			
 			break;
@@ -102,8 +103,8 @@ int main()
 			}
 			else {
 				std::cout << "You could not escape!\n";
-				randomNumberValue = (rand() % range) + lowestNumber;
-				damage = (monsterStats.attack* (monsterStats.attack + randomNumberValue) * 10) / (monsterStats.attack + characterStats.defense);
+				damage = (monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense);
+				damage = addRandomness(damage);
 				characterHPLeft -= damage;
 				std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
 				chanceOfSuccess += 10;
@@ -120,4 +121,19 @@ int main()
 			break;
 		}
 	}
+
+}
+
+
+int addRandomness(int rawNumber) {
+	const int percentRange = 10;
+	double temp = (double)rawNumber / 100.0;
+	int range = (int)(temp * percentRange);
+	if (range < 3) {
+		range = 3;
+	}
+	int lowestNumber = (range / 2 * -1) + rawNumber;
+	int randomNumberValue = (rand() % range) + lowestNumber;
+	
+	return randomNumberValue;
 }
