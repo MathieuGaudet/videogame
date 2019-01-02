@@ -57,12 +57,16 @@ int main()
 	int lowestNumber = 1;
 	int range = highestNumber - lowestNumber;
 
+	// run option math
+	int chanceOfSuccess = 75;
+	bool runSuccess = false;
+	int runProbabilityRange = 100;
 	
 	char actionChoice;
 	int damage = 0;
 	std::cout << "An enemy approaches! ";
 	while (1) {
-		std::cout << "Would you like to attack (a), guard (b), or run?\n";
+		std::cout << "Would you like to attack (a), guard (b), or run (c)?\n";
 		std::cin >> actionChoice;
 		switch (actionChoice)
 		{
@@ -83,10 +87,35 @@ int main()
 				std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
 			}
 			break;
+		case 'b':
+			randomNumberValue = (rand() % range) + lowestNumber;
+			damage = ((monsterStats.attack* (monsterStats.attack + randomNumberValue) * 10) / (monsterStats.attack + characterStats.defense))/2;
+			characterHPLeft -= damage;
+			std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
+			
+			break;
+		case 'c':
+			randomNumberValue = (rand() % runProbabilityRange) + 0;
+			if (randomNumberValue <= chanceOfSuccess) {
+				std::cout << "You have escaped successfully! \n";
+				runSuccess = true;
+			}
+			else {
+				std::cout << "You could not escape!\n";
+				randomNumberValue = (rand() % range) + lowestNumber;
+				damage = (monsterStats.attack* (monsterStats.attack + randomNumberValue) * 10) / (monsterStats.attack + characterStats.defense);
+				characterHPLeft -= damage;
+				std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
+				chanceOfSuccess += 10;
+			}
+			break;
 		default:
 			break;
 		}
-		if (monsterHPLeft <= 0) {
+		if (characterHPLeft <= 0) {
+			std::cout << "You have died.\nGAME OVER\n";
+		}
+		if (monsterHPLeft <= 0 || characterHPLeft <= 0 || runSuccess == true) {
 			std::cout << "\n\n\n";
 			break;
 		}
