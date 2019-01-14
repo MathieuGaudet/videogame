@@ -29,32 +29,6 @@ enum characterDirection {
 
 int main()
 {
-	/*sf::Font font;
-	if (!font.loadFromFile("arial.ttf"))
-	{
-		// error...
-	}
-
-	initiateCombat();
-	sf::Text text;
-
-	// select the font
-	text.setFont(); // font is a sf::Font
-
-	// set the string to display
-	text.setString("Hello world");
-
-	// set the character size
-	text.setCharacterSize(24); // in pixels, not points!
-
-	// set the color
-	text.setFillColor(sf::Color::Red);
-
-	// set the text style
-	text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-
-	return 0;
-	*/
 
 
 	struct location playerLocation;
@@ -152,6 +126,20 @@ int main()
 	{
 		std::cout << "error: Image \"Blank\" not found";
 	}
+
+	//Text implementation 
+
+	sf::Font m_font;
+	sf::Text m_content;
+
+	sf::Vector2f textPosition;
+	textPosition.x = 20;
+	textPosition.y = 20;
+	m_font.loadFromFile("fonts/arial.ttf");
+	m_content.setFont(m_font);
+	m_content.setString("Example text ");
+	m_content.setCharacterSize(30);
+	m_content.setPosition(textPosition);
 
 	sf::Sprite dungeonMapLayout[dungeonDisplay][dungeonDisplay];
 
@@ -292,6 +280,7 @@ int main()
 		}
 		else {
 			dungeonMapLayout[displayCenter][displayCenter].setTexture(enemyTexture);
+			window.draw(m_content);
 		}
 		window.draw(dungeonMapLayout[displayCenter][displayCenter]);
 		window.display();
