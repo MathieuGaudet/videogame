@@ -127,8 +127,14 @@ int main()
 		std::cout << "error: Image \"Blank\" not found";
 	}
 
-	//Text implementation 
+	// random number generating stuff
+	srand(time(NULL));
+	int randomNumberValue = 10;
+	int highestNumber = 36;
+	int lowestNumber = 1;
+	int range = highestNumber - lowestNumber;
 
+	// Text implementation 
 	sf::Font m_font;
 	sf::Text m_content;
 
@@ -150,7 +156,7 @@ int main()
 		}
 	}
 
-	bool inCombat = true;
+	bool inCombat = false;
 
 	enum characterDirection lastDirection = DOWN;
 	int spriteCycle = 0;
@@ -163,61 +169,72 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-		getMapLayout(playerLocation.x, playerLocation.y, displayedSection);
+		if (inCombat == false) {
+			getMapLayout(playerLocation.x, playerLocation.y, displayedSection);
 
-		// Moves player leftwards
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			lastDirection = LEFT;
-			if (displayedSection[displayCenter][displayCenter - 1] == tileFloor)
+			// Moves player leftwards
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
-				playerLocation.x--;
+				lastDirection = LEFT;
+				if (displayedSection[displayCenter][displayCenter - 1] == tileFloor)
+				{
+					playerLocation.x--;
+				}
+				randomNumberValue = (rand() % range) + lowestNumber;
+			}
+
+			// Moves player rightwards
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+			{
+				lastDirection = RIGHT;
+
+				if (displayedSection[displayCenter][displayCenter + 1] == tileFloor)
+				{
+					playerLocation.x++;
+				}
+				randomNumberValue = (rand() % range) + lowestNumber;
+			}
+
+			// Moves player upwards
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			{
+				lastDirection = UP;
+
+				if (displayedSection[displayCenter - 1][displayCenter] == tileFloor)
+				{
+					playerLocation.y--;
+				}
+				randomNumberValue = (rand() % range) + lowestNumber;
+			}
+
+			// Moves player downwards
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			{
+				lastDirection = DOWN;
+
+				if (displayedSection[displayCenter + 1][displayCenter] == tileFloor)
+				{
+					playerLocation.y++;
+				}
+				randomNumberValue = (rand() % range) + lowestNumber;
+			}
+
+			// If no direction is being pressed, this will make it so that the character won't move.
+
+			else
+			{
+				spriteCycle = 0;
+			}
+			if (++spriteCycle >= 3)
+			{
+				spriteCycle = 0;
+			}
+
+			if (randomNumberValue == 1)
+			{
+				inCombat = true;
 			}
 		}
-
-		// Moves player rightwards
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-			lastDirection = RIGHT;
-
-			if (displayedSection[displayCenter][displayCenter + 1] == tileFloor)
-			{
-				playerLocation.x++;
-			}
-		}
-
-		// Moves player upwards
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		{
-			lastDirection = UP;
-
-			if (displayedSection[displayCenter - 1][displayCenter] == tileFloor)
-			{
-				playerLocation.y--;
-			}
-		}
-
-		// Moves player downwards
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		{
-			lastDirection = DOWN;
-
-			if (displayedSection[displayCenter + 1][displayCenter] == tileFloor)
-			{
-				playerLocation.y++;
-			}
-		}
-		// If no direction is being pressed, this will make it so that the character won't move.
-
-		else
-		{
-			spriteCycle = 0;
-		}
-		if (++spriteCycle >= 3)
-		{
-			spriteCycle = 0;
-		}
-
 
 		window.clear();
 	
