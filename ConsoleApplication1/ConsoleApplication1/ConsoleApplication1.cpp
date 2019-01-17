@@ -126,6 +126,11 @@ int main()
 	{
 		std::cout << "error: Image \"Blank\" not found";
 	}
+	sf::Texture cursorTexture;
+	if (!cursorTexture.loadFromFile("sprites/cursor.png"))
+	{
+		std::cout << "error: Image \"cursor\" not found";
+	}
 
 	// random number generating stuff
 	srand(time(NULL));
@@ -136,16 +141,36 @@ int main()
 
 	// Text implementation 
 	sf::Font m_font;
-	sf::Text m_content;
+	sf::Text attackText;
 
-	sf::Vector2f textPosition;
-	textPosition.x = 20;
-	textPosition.y = 20;
-	m_font.loadFromFile("fonts/arial.ttf");
-	m_content.setFont(m_font);
-	m_content.setString("Example text ");
-	m_content.setCharacterSize(30);
-	m_content.setPosition(textPosition);
+	sf::Vector2f attackTextPosition;
+	attackTextPosition.x = 35;
+	attackTextPosition.y = 350;
+	m_font.loadFromFile("fonts/OCRAEXT.ttf");
+	attackText.setFont(m_font);
+	attackText.setString("Attack");
+	attackText.setCharacterSize(24);
+	attackText.setPosition(attackTextPosition);
+
+	sf::Text guardText;
+	sf::Vector2f guardTextPosition;
+	guardTextPosition.x = 35;
+	guardTextPosition.y = 380;
+	m_font.loadFromFile("fonts/OCRAEXT.ttf");
+	guardText.setFont(m_font);
+	guardText.setString("Guard");
+	guardText.setCharacterSize(24);
+	guardText.setPosition(guardTextPosition);
+
+	sf::Text runText;
+	sf::Vector2f runTextPosition;
+	runTextPosition.x = 35;
+	runTextPosition.y = 410;
+	m_font.loadFromFile("fonts/OCRAEXT.ttf");
+	runText.setFont(m_font);
+	runText.setString("Run");
+	runText.setCharacterSize(24);
+	runText.setPosition(runTextPosition);
 
 	sf::Sprite dungeonMapLayout[dungeonDisplay][dungeonDisplay];
 
@@ -157,9 +182,11 @@ int main()
 	}
 
 	bool inCombat = false;
+	int cursorLocation[3] = { 11, 12, 13 };
 
 	enum characterDirection lastDirection = DOWN;
 	int spriteCycle = 0;
+	int cursorCycle = 0;
 	int idle = 0;
 	while (window.isOpen())
 	{
@@ -235,6 +262,22 @@ int main()
 				inCombat = true;
 			}
 		}
+		else {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			{
+				++cursorCycle;
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			{
+				--cursorCycle;
+			}
+			if (cursorCycle >= 3) {
+				cursorCycle = 0;
+			}
+			if (cursorCycle < 0) {
+				cursorCycle = 2;
+			}
+		}
 
 		window.clear();
 	
@@ -297,9 +340,13 @@ int main()
 		}
 		else {
 			dungeonMapLayout[displayCenter][displayCenter].setTexture(enemyTexture);
-			window.draw(m_content);
+			dungeonMapLayout[cursorLocation[cursorCycle]][0].setTexture(cursorTexture);
+			window.draw(attackText);
+			window.draw(guardText);
+			window.draw(runText);
 		}
 		window.draw(dungeonMapLayout[displayCenter][displayCenter]);
+		window.draw(dungeonMapLayout[cursorLocation[cursorCycle]][0]);
 		window.display();
 		Sleep(100);
 		//		std::cout << "\n";
