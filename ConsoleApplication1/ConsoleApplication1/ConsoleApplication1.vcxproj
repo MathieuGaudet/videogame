@@ -163,12 +163,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Combat.h" />
     <ClInclude Include="DungeonMap.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Combat.cpp" />
     <ClCompile Include="ConsoleApplication1.cpp" />
     <ClCompile Include="DungeonMap.cpp" />
     <ClCompile Include="pch.cpp">

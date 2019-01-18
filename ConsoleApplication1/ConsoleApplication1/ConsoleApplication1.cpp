@@ -87,17 +87,10 @@ int main()
 
 	// random number generating stuff
 	srand(time(NULL));
-	int randomNumberValue;
 	int highestNumber = 4;
 	int lowestNumber = 1;
 	int range = highestNumber - lowestNumber;
-
-	// run option math
-	int chanceOfSuccess = 75;
-	bool runSuccess = false;
-	int runProbabilityRange = 100;
 	int damage = 0;
-
 
 	//0 = Left, 1 = Right, 2 = Up, 3 = down
 	sf::Texture playerTextures[4][3];
@@ -199,12 +192,21 @@ int main()
 
 	// Text implementation 
 	sf::Font m_font;
-	sf::Text attackText;
+	m_font.loadFromFile("fonts/OCRAEXT.ttf");
 
+	sf::Text gameOver;
+	sf::Vector2f gameOverPosition;
+	gameOverPosition.x = 10;
+	gameOverPosition.y = 200;
+	gameOver.setFont(m_font);
+	gameOver.setString("GAME OVER");
+	gameOver.setCharacterSize(85);
+	gameOver.setPosition(gameOverPosition);
+
+	sf::Text attackText;
 	sf::Vector2f attackTextPosition;
 	attackTextPosition.x = 35;
 	attackTextPosition.y = 350;
-	m_font.loadFromFile("fonts/OCRAEXT.ttf");
 	attackText.setFont(m_font);
 	attackText.setString("Attack");
 	attackText.setCharacterSize(24);
@@ -214,7 +216,6 @@ int main()
 	sf::Vector2f guardTextPosition;
 	guardTextPosition.x = 35;
 	guardTextPosition.y = 380;
-	m_font.loadFromFile("fonts/OCRAEXT.ttf");
 	guardText.setFont(m_font);
 	guardText.setString("Guard");
 	guardText.setCharacterSize(24);
@@ -231,11 +232,57 @@ int main()
 	*/
 	runTextPosition.x = 35;
 	runTextPosition.y = 410;
-	m_font.loadFromFile("fonts/OCRAEXT.ttf");
 	runText.setFont(m_font);
 	runText.setString("Run");
 	runText.setCharacterSize(24);
 	runText.setPosition(runTextPosition);
+
+	sf::Text introText[2];
+	sf::Vector2f introTextPosition[2];
+	introTextPosition[0].x = 35;
+	introTextPosition[0].y = 100;
+	introText[0].setFont(m_font);
+	introText[0].setString("To move, use wasd or the arrow keys");
+	introText[0].setCharacterSize(20);
+	introText[0].setPosition(introTextPosition[0]);
+
+	introTextPosition[1].x = 12;
+	introTextPosition[1].y = 200;
+	introText[1].setFont(m_font);
+	introText[1].setString("To select an option in combat, use \"J\"");
+	introText[1].setCharacterSize(20);
+	introText[1].setPosition(introTextPosition[1]);
+
+	sf::Text combatText1[3];
+	sf::Vector2f combatText1Position[3];
+	combatText1Position[0].x = 125;
+	combatText1Position[0].y = 350;
+	combatText1[0].setFont(m_font);
+	combatText1[0].setString("");
+	combatText1[0].setCharacterSize(15);
+	combatText1[0].setPosition(combatText1Position[0]);
+
+	combatText1Position[1].x = 125;
+	combatText1Position[1].y = 380;
+	combatText1[1].setFont(m_font);
+	combatText1[1].setString("");
+	combatText1[1].setCharacterSize(15);
+	combatText1[1].setPosition(combatText1Position[1]);
+	
+	combatText1Position[2].x = 125;
+	combatText1Position[2].y = 400;
+	combatText1[2].setFont(m_font);
+	combatText1[2].setString("");
+	combatText1[2].setCharacterSize(15);
+	combatText1[2].setPosition(combatText1Position[2]);
+
+	std::string combatTextString[2];
+
+	// run option math
+	int chanceOfSuccess = 75;
+	bool runSuccess = false;
+	int runProbabilityRange = 100;
+	int runRandomNumberValue;
 
 	sf::Sprite dungeonMapLayout[dungeonDisplay][dungeonDisplay];
 
@@ -252,7 +299,9 @@ int main()
 	enum characterDirection lastDirection = DOWN;
 	int spriteCycle = 0;
 	int cursorCycle = 0;
-	int idle = 0;
+	int textCycle = 0;
+	bool firstTime = true;
+// Start of Event loop
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -261,161 +310,319 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-		if (inCombat == false) {
-			getMapLayout(playerLocation.x, playerLocation.y, displayedSection);
-
-			// Moves player leftwards
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{
-				lastDirection = LEFT;
-				if (displayedSection[displayCenter][displayCenter - 1] == tileFloor)
-				{
-					playerLocation.x--;
-				}
-				encounterChance = (rand() % encouterRange) + encounterChanceLow;
-			}
-
-			// Moves player rightwards
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			{
-				lastDirection = RIGHT;
-
-				if (displayedSection[displayCenter][displayCenter + 1] == tileFloor)
-				{
-					playerLocation.x++;
-				}
-				encounterChance = (rand() % encouterRange) + encounterChanceLow;
-			}
-
-			// Moves player upwards
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			{
-				lastDirection = UP;
-
-				if (displayedSection[displayCenter - 1][displayCenter] == tileFloor)
-				{
-					playerLocation.y--;
-				}
-				encounterChance = (rand() % encouterRange) + encounterChanceLow;
-			}
-
-			// Moves player downwards
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			{
-				lastDirection = DOWN;
-
-				if (displayedSection[displayCenter + 1][displayCenter] == tileFloor)
-				{
-					playerLocation.y++;
-				}
-				encounterChance = (rand() % encouterRange) + encounterChanceLow;
-			}
-
-			// If no direction is being pressed, this will make it so that the character won't move.
-
-			else
-			{
-				spriteCycle = 0;
-			}
-			if (++spriteCycle >= 3)
-			{
-				spriteCycle = 0;
-			}
-
-			if (encounterChance == 1)
-			{
-				inCombat = true;
-			}
-		}
-		else {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			{
-				++cursorCycle;
-			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			{
-				--cursorCycle;
-			}
-			if (cursorCycle >= 3) {
-				cursorCycle = 0;
-			}
-			if (cursorCycle < 0) {
-				cursorCycle = 2;
-			}
-		}
-
-		window.clear();
-	
-		for (int y = 0; y < dungeonDisplay; y++)
-		{
-			for (int x = 0; x < dungeonDisplay; x++) {
-				// Set texture and location on the screen
+		if (firstTime == false) {
+			if (characterHPLeft > 0) {
+				// Resets Values
+				encounterChance = 10;
+				runSuccess = false;
 				if (inCombat == false) {
-					switch (displayedSection[y][x])
-					{
-						/*case tileBlank:
-							dungeonMapLayout[y][x].setTexture(blankTexture);
-							break;*/
-					case tileWall:
-						dungeonMapLayout[y][x].setTexture(wallTexture);
-						//std::cout << "[]";
-						break;
-					case tileWallShadow:
-						dungeonMapLayout[y][x].setTexture(wallShadowTexture);
-						//std::cout << "()";
-						break;
-					case tileFloor:
-						dungeonMapLayout[y][x].setTexture(floorTexture);
-						//std::cout << "00";
-						break;
+					monsterHPLeft = monsterStats.hitpoints;
+					combatText1[0].setString("");
+					combatText1[1].setString("");
+					combatText1[2].setString("");
+					chanceOfSuccess = 75;
+				}
+				if (inCombat == false) {
+					getMapLayout(playerLocation.x, playerLocation.y, displayedSection);
 
-					default:
-						dungeonMapLayout[y][x].setTexture(blankTexture);
-						//std::cout << "@@";
-						break;
+					// Moves player leftwards
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+					{
+						lastDirection = LEFT;
+						if (displayedSection[displayCenter][displayCenter - 1] == tileFloor)
+						{
+							playerLocation.x--;
+						}
+						encounterChance = (rand() % encouterRange) + encounterChanceLow;
+					}
+
+					// Moves player rightwards
+					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+					{
+						lastDirection = RIGHT;
+
+						if (displayedSection[displayCenter][displayCenter + 1] == tileFloor)
+						{
+							playerLocation.x++;
+						}
+						encounterChance = (rand() % encouterRange) + encounterChanceLow;
+					}
+
+					// Moves player upwards
+					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+					{
+						lastDirection = UP;
+
+						if (displayedSection[displayCenter - 1][displayCenter] == tileFloor)
+						{
+							playerLocation.y--;
+						}
+						encounterChance = (rand() % encouterRange) + encounterChanceLow;
+					}
+
+					// Moves player downwards
+					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+					{
+						lastDirection = DOWN;
+
+						if (displayedSection[displayCenter + 1][displayCenter] == tileFloor)
+						{
+							playerLocation.y++;
+						}
+						encounterChance = (rand() % encouterRange) + encounterChanceLow;
+					}
+
+					// If no direction is being pressed, this will make it so that the character won't move.
+
+					else
+					{
+						spriteCycle = 0;
+					}
+					if (++spriteCycle >= 3)
+					{
+						spriteCycle = 0;
+					}
+
+					if (encounterChance == 1)
+					{
+						inCombat = true;
 					}
 				}
-				else {
-					dungeonMapLayout[y][x].setTexture(blankTexture);
+				// lets the user pick an option for combat
+				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) {
+					switch (cursorCycle)
+					{
+					case 0:
+						damage = (characterStats.attack * (characterStats.attack) * 10) / (characterStats.attack + monsterStats.defense);
+						damage = addRandomness(damage);
+						combatTextString[0] = "You deal ";
+						combatTextString[1] = " damage to the monster";
+						combatTextString[0] += std::to_string(damage);
+						combatTextString[0] += combatTextString[1];
+						combatText1[textCycle].setString(combatTextString[0]);
+						textCycle++;
+						if (textCycle >= 3)
+						{
+							textCycle = 0;
+						}
+						monsterHPLeft -= damage;
+						if (monsterHPLeft <= 0) {
+							combatText1[textCycle].setString("You have slain the fiend");
+							textCycle++;
+							if (textCycle >= 3)
+							{
+								textCycle = 0;
+							}
+						}
+						else {
+
+							damage = (monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense);
+							damage = addRandomness(damage);
+							characterHPLeft -= damage;
+							combatTextString[0] = "The monster deals ";
+							combatTextString[1] = " damage to you";
+							combatTextString[0] += std::to_string(damage);
+							combatTextString[0] += combatTextString[1];
+							combatText1[textCycle].setString(combatTextString[0]);
+							textCycle++;
+							if (textCycle >= 3)
+							{
+								textCycle = 0;
+							}
+
+							combatTextString[0] = "You have ";
+							combatTextString[1] = " HP left";
+							combatTextString[0] += std::to_string(characterHPLeft);
+							combatTextString[0] += combatTextString[1];
+							combatText1[textCycle].setString(combatTextString[0]);
+							textCycle++;
+							if (textCycle >= 3)
+							{
+								textCycle = 0;
+							}
+						}
+						break;
+					case 1:
+
+						damage = ((monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense)) / 2;
+						damage = addRandomness(damage);
+						characterHPLeft -= damage;
+						combatTextString[0] = "The monster deals ";
+						combatTextString[1] = " damage to you";
+						combatTextString[0] += std::to_string(damage);
+						combatTextString[0] += combatTextString[1];
+						combatText1[textCycle].setString(combatTextString[0]);
+						textCycle++;
+						if (textCycle >= 3)
+						{
+							textCycle = 0;
+						}
+
+						combatTextString[0] = "You have ";
+						combatTextString[1] = " HP left";
+						combatTextString[0] += std::to_string(characterHPLeft);
+						combatTextString[0] += combatTextString[1];
+						combatText1[textCycle].setString(combatTextString[0]);
+						textCycle++;
+						if (textCycle >= 3)
+						{
+							textCycle = 0;
+						}
+						break;
+					case 2:
+						runRandomNumberValue = (rand() % runProbabilityRange) + 0;
+						if (runRandomNumberValue <= chanceOfSuccess) {
+							combatText1[spriteCycle].setString("You have escaped successfully!");
+							runSuccess = true;
+						}
+						else {
+							combatText1[spriteCycle].setString("You could not escape!");
+
+							damage = (monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense);
+							damage = addRandomness(damage);
+							characterHPLeft -= damage;
+							combatTextString[0] = "The monster deals ";
+							combatTextString[1] = " damage to you";
+							combatTextString[0] += std::to_string(damage);
+							combatTextString[0] += combatTextString[1];
+							combatText1[textCycle].setString(combatTextString[0]);
+							textCycle++;
+							if (textCycle >= 3)
+							{
+								textCycle = 0;
+							}
+
+							combatTextString[0] = "You have ";
+							combatTextString[1] = " HP left";
+							combatTextString[0] += std::to_string(characterHPLeft);
+							combatTextString[0] += combatTextString[1];
+							combatText1[textCycle].setString(combatTextString[0]);
+							textCycle++;
+							if (textCycle >= 3)
+							{
+								textCycle = 0;
+							}
+							chanceOfSuccess += 10;
+							break;
+					default:
+						std::cout << "Unexpected error switch statement failed in a way that should not be possible";
+						break;
+						}
+					}
+				}
+				if (inCombat == true) {
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+					{
+						++cursorCycle;
+					}
+					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+					{
+						--cursorCycle;
+					}
+					if (cursorCycle >= 3) {
+						cursorCycle = 0;
+					}
+					if (cursorCycle < 0) {
+						cursorCycle = 2;
+					}
 				}
 
-				window.draw(dungeonMapLayout[y][x]);
+				window.clear();
+
+				for (int y = 0; y < dungeonDisplay; y++)
+				{
+					for (int x = 0; x < dungeonDisplay; x++) {
+						// Set texture and location on the screen
+						if (inCombat == false) {
+							switch (displayedSection[y][x])
+							{
+								/*case tileBlank:
+									dungeonMapLayout[y][x].setTexture(blankTexture);
+									break;*/
+							case tileWall:
+								dungeonMapLayout[y][x].setTexture(wallTexture);
+								//std::cout << "[]";
+								break;
+							case tileWallShadow:
+								dungeonMapLayout[y][x].setTexture(wallShadowTexture);
+								//std::cout << "()";
+								break;
+							case tileFloor:
+								dungeonMapLayout[y][x].setTexture(floorTexture);
+								//std::cout << "00";
+								break;
+
+							default:
+								dungeonMapLayout[y][x].setTexture(blankTexture);
+								//std::cout << "@@";
+								break;
+							}
+						}
+						else {
+							dungeonMapLayout[y][x].setTexture(blankTexture);
+						}
+
+						window.draw(dungeonMapLayout[y][x]);
+
+					}
+
+					//std::cout << "\n";
+				}
+				if (inCombat == false) {
+					if (lastDirection == DOWN) {
+						dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[3][spriteCycle]);
+					}
+					else if (lastDirection == RIGHT)
+					{
+						dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[1][spriteCycle]);
+					}
+					else if (lastDirection == LEFT)
+					{
+						dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[0][spriteCycle]);
+					}
+					else if (lastDirection == UP)
+					{
+						dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[2][spriteCycle]);
+					}
+
+				}
+				else if (inCombat == true) {
+					dungeonMapLayout[displayCenter][displayCenter].setTexture(enemyTexture);
+					dungeonMapLayout[cursorLocation[cursorCycle]][0].setTexture(cursorTexture);
+					window.draw(attackText);
+					window.draw(guardText);
+					window.draw(runText);
+					window.draw(combatText1[0]);
+					window.draw(combatText1[1]);
+					window.draw(combatText1[2]);
+				}
+				window.draw(dungeonMapLayout[displayCenter][displayCenter]);
+				window.draw(dungeonMapLayout[cursorLocation[cursorCycle]][0]);
 
 			}
-
-			//std::cout << "\n";
-		}
-		if (inCombat == false) {
-			if (lastDirection == DOWN) {
-				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[3][spriteCycle]);
-			}
-			else if (lastDirection == RIGHT)
-			{
-				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[1][spriteCycle]);
-			}
-			else if (lastDirection == LEFT)
-			{
-				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[0][spriteCycle]);
-			}
-			else if (lastDirection == UP)
-			{
-				dungeonMapLayout[displayCenter][displayCenter].setTexture(playerTextures[2][spriteCycle]);
-			}
+			else {
+			window.clear();
+			window.draw(gameOver);
+}
 
 		}
 		else {
-			dungeonMapLayout[displayCenter][displayCenter].setTexture(enemyTexture);
-			dungeonMapLayout[cursorLocation[cursorCycle]][0].setTexture(cursorTexture);
-			window.draw(attackText);
-			window.draw(guardText);
-			window.draw(runText);
+		window.draw(introText[0]);
+		window.draw(introText[1]);
+}
+
+			window.display();
+			if (monsterHPLeft <= 0 || runSuccess == true) {
+				inCombat = false;
+				Sleep(500);
+			}
+			if (firstTime == true) {
+				firstTime = false;
+				Sleep(5000);
+			}
+			Sleep(100);
+			//		std::cout << "\n";
 		}
-		window.draw(dungeonMapLayout[displayCenter][displayCenter]);
-		window.draw(dungeonMapLayout[cursorLocation[cursorCycle]][0]);
-		window.display();
-		Sleep(100);
-		//		std::cout << "\n";
-	}
 
 	return 0;
 }

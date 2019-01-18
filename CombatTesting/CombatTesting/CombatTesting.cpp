@@ -91,7 +91,8 @@ int main()
 			break;
 		case 'b':
 			damage = (monsterStats.attack* (monsterStats.attack) * 10) / (monsterStats.attack + characterStats.defense);
-			damage = addRandomness(damage);			characterHPLeft -= damage;
+			damage = addRandomness(damage);
+			characterHPLeft -= damage;
 			std::cout << "\nThe monster deals " << damage << " damage to you.\nYou have " << characterHPLeft << " HP left\n";
 			
 			break;
