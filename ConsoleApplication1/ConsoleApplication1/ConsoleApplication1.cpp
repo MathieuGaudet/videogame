@@ -27,6 +27,8 @@ enum characterDirection {
 	DOWN
 };
 
+int addRandomness(int rawNumber);
+
 int main()
 {
 
@@ -39,6 +41,62 @@ int main()
 
 
 	sf::RenderWindow window(sf::VideoMode(spriteSize * dungeonDisplay, spriteSize * dungeonDisplay), "Mathieu's Game");
+
+
+	struct statBlock
+	{
+		int attack;
+		int defense;
+		int hitpoints;
+	};
+	// equipment
+	const struct statBlock empty = { 0, 0, 0 };
+	const struct statBlock clothShirt = { 0, 2, 0 };
+	const struct statBlock clothPants = { 0, 2, 0 };
+	const struct statBlock simpleHat = { 0, 1, 0 };
+	const struct statBlock simpleShoes = { 0, 1, 0 };
+	const struct statBlock wornDagger = { 2, 0, 0 };
+
+	// equipment slots
+	struct statBlock chest = clothShirt;
+	struct statBlock legs = clothPants;
+	struct statBlock head = simpleHat;
+	struct statBlock feet = simpleShoes;
+	struct statBlock mainHand = wornDagger;
+	struct statBlock offHand = empty;
+
+	int characterLevel = 1;
+
+	// equipment stats added together
+	struct statBlock equipmentTotalStats;
+	equipmentTotalStats.attack = chest.attack + legs.attack + head.attack + feet.attack + mainHand.attack + offHand.attack;
+	equipmentTotalStats.defense = chest.defense + legs.defense + head.defense + feet.defense + mainHand.defense + offHand.defense;
+	equipmentTotalStats.hitpoints = chest.hitpoints + legs.hitpoints + head.hitpoints + feet.hitpoints + mainHand.hitpoints + offHand.hitpoints;
+
+	// the character's stats
+	struct statBlock characterStats;
+	characterStats.attack = (characterLevel*characterLevel) + equipmentTotalStats.attack;
+	characterStats.defense = (characterLevel*characterLevel) + equipmentTotalStats.defense;
+	characterStats.hitpoints = 90 + (characterLevel*characterLevel) + equipmentTotalStats.hitpoints;
+
+	int characterHPLeft = characterStats.hitpoints;
+
+	// monster's stats
+	struct statBlock monsterStats = { 2, 3, 45 };
+	int monsterHPLeft = monsterStats.hitpoints;
+
+	// random number generating stuff
+	srand(time(NULL));
+	int randomNumberValue;
+	int highestNumber = 4;
+	int lowestNumber = 1;
+	int range = highestNumber - lowestNumber;
+
+	// run option math
+	int chanceOfSuccess = 75;
+	bool runSuccess = false;
+	int runProbabilityRange = 100;
+	int damage = 0;
 
 
 	//0 = Left, 1 = Right, 2 = Up, 3 = down
@@ -132,12 +190,12 @@ int main()
 		std::cout << "error: Image \"cursor\" not found";
 	}
 
-	// random number generating stuff
+	// random number generating stuff for the enccounters
 	srand(time(NULL));
-	int randomNumberValue = 10;
-	int highestNumber = 36;
-	int lowestNumber = 1;
-	int range = highestNumber - lowestNumber;
+	int encounterChance = 10;
+	int encounterChanceHigh = 36;
+	int encounterChanceLow = 1;
+	int encouterRange = encounterChanceHigh - encounterChanceLow;
 
 	// Text implementation 
 	sf::Font m_font;
@@ -164,6 +222,13 @@ int main()
 
 	sf::Text runText;
 	sf::Vector2f runTextPosition;
+/*
+	std::string testThis = "amazing";
+	int maybeWork = 4;
+	std::string forTesting = "work? ";
+	forTesting += std::to_string(maybeWork);
+	forTesting += testThis;
+	*/
 	runTextPosition.x = 35;
 	runTextPosition.y = 410;
 	m_font.loadFromFile("fonts/OCRAEXT.ttf");
@@ -207,7 +272,7 @@ int main()
 				{
 					playerLocation.x--;
 				}
-				randomNumberValue = (rand() % range) + lowestNumber;
+				encounterChance = (rand() % encouterRange) + encounterChanceLow;
 			}
 
 			// Moves player rightwards
@@ -219,7 +284,7 @@ int main()
 				{
 					playerLocation.x++;
 				}
-				randomNumberValue = (rand() % range) + lowestNumber;
+				encounterChance = (rand() % encouterRange) + encounterChanceLow;
 			}
 
 			// Moves player upwards
@@ -231,7 +296,7 @@ int main()
 				{
 					playerLocation.y--;
 				}
-				randomNumberValue = (rand() % range) + lowestNumber;
+				encounterChance = (rand() % encouterRange) + encounterChanceLow;
 			}
 
 			// Moves player downwards
@@ -243,7 +308,7 @@ int main()
 				{
 					playerLocation.y++;
 				}
-				randomNumberValue = (rand() % range) + lowestNumber;
+				encounterChance = (rand() % encouterRange) + encounterChanceLow;
 			}
 
 			// If no direction is being pressed, this will make it so that the character won't move.
@@ -257,7 +322,7 @@ int main()
 				spriteCycle = 0;
 			}
 
-			if (randomNumberValue == 1)
+			if (encounterChance == 1)
 			{
 				inCombat = true;
 			}
@@ -356,5 +421,19 @@ int main()
 }
 
 
+
+
+int addRandomness(int rawNumber) {
+	const int percentRange = 10;
+	double temp = (double)rawNumber / 100.0;
+	int range = (int)(temp * percentRange);
+	if (range < 3) {
+		range = 3;
+	}
+	int lowestNumber = (range / 2 * -1) + rawNumber;
+	int randomNumberValue = (rand() % range) + lowestNumber;
+
+	return randomNumberValue;
+}
 
 
