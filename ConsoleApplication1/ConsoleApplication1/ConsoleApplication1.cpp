@@ -1,5 +1,8 @@
 // ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
+// Game: Warrior's Quest
+// Mathieu Gaudet
+// Friday 01/18/2019
 
 
 #include "pch.h"
